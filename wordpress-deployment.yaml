@@ -24,12 +24,9 @@ spec:
               mountPath: /var/www/html
           env:
             - name: WORDPRESS_DB_HOST
-              value: mysql-service.default.svc.cluster.local
+              value: mysql-service
             - name: WORDPRESS_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_ROOT_PASSWORD
+              value: test123
             - name: WORDPRESS_DB_USER
               value: root
             - name: WORDPRESS_DB_NAME
@@ -38,13 +35,13 @@ spec:
         - name: wordpress-data
           persistentVolumeClaim:
             claimName: wordpress-pvc
-------
+---
 kind: Service
 apiVersion: v1
 metadata:
   name: wordpress-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: wordpress
   ports:
@@ -52,4 +49,20 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30007
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+spec:
+  rules:
+  - host: "wordpress-turgay.me"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: wordpress-service
+            port:
+              number: 80
