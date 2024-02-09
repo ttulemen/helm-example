@@ -56,7 +56,7 @@ metadata:
   name: wordpress-ingress
 spec:
   rules:
-  - host: "wordpress-turgay.me"
+  - host: "wordpress.turgay.me"
     http:
       paths:
       - pathType: Prefix
