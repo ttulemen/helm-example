@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wordpress
+  name: wordpress-{{ .Values.name }}
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: wordpress
+      app: wordpress-{{ .Values.name }}
   template:
     metadata:
       labels:
-        app: wordpress
+        app: wordpress-{{ .Values.name }}
     spec:
       containers:
         - name: wordpress
@@ -20,30 +20,30 @@ spec:
             - containerPort: 80
               name: wordpress
           volumeMounts:
-            - name: wordpress-data
+            - name: wordpress-data-{{ .Values.name }}
               mountPath: /var/www/html
           env:
             - name: WORDPRESS_DB_HOST
-              value: mysql-service
+              value: mysql-service-{{ .Values.name }}
             - name: WORDPRESS_DB_PASSWORD
-              value: test123
+              value: {{ .Values.mysqlpassword }}
             - name: WORDPRESS_DB_USER
               value: root
             - name: WORDPRESS_DB_NAME
               value: mysql
       volumes:
-        - name: wordpress-data
+        - name: wordpress-data-{{ .Values.name }}
           persistentVolumeClaim:
-            claimName: wordpress-pvc
+            claimName: wordpress-pvc-{{ .Values.name }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: wordpress-service
+  name: wordpress-service-{{ .Values.name }}
 spec:
   type: ClusterIP
   selector:
-    app: wordpress
+    app: wordpress-{{ .Values.name }}
   ports:
     - name: http
       protocol: TCP
@@ -53,16 +53,16 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wordpress-ingress
+  name: wordpress-ingress-{{ .Values.name }}
 spec:
   rules:
-  - host: "wordpress.turgay.me"
+  - host: {{ .Values.domainname }}
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: wordpress-service
+            name: wordpress-service-{{ .Values.name }}
             port:
               number: 80

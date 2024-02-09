@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-service
+  name: mysql-service-{{ .Values.name }}
 spec:
   ports:
   - port: 3306
     protocol: TCP
   selector:
-    app: mysql
+    app: mysql-{{ .Values.name }}

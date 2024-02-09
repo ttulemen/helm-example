@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: wordpress-pv
+  name: wordpress-pv-{{ .Values.name }}
 spec:
   capacity:
     storage: 10Gi
@@ -9,13 +9,13 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /home/ubuntu/project/wp-data 
+    path: /home/ubuntu/project/wp-data-{{ .Values.name }}
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wordpress-pvc
+  name: wordpress-pvc-{{ .Values.name }}
 spec:
   accessModes:
   - ReadWriteOnce
